@@ -1,0 +1,92 @@
+type BasketItem @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	Drink: Drink @hasOne
+	basketID: ID! @index(name: "byBasket")
+	Milk: Milk @hasOne
+	Size: Size @hasOne
+	FlavorShots: [FlavorShot]
+		@hasMany(indexName: "byBasketItem", fields: ["id"])
+	price: Float!
+}
+
+type Basket @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	User: User @hasOne
+	Store: Store @hasOne
+	BasketItems: [BasketItem] @hasMany(indexName: "byBasket", fields: ["id"])
+}
+
+type User @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	name: String!
+	email: String!
+	orders: [Order] @hasMany
+	defaultStore: Store @hasOne
+	role: Role! @hasOne
+}
+
+type Role @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	name: String!
+}
+
+type Store @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	address: String!
+	latitude: String!
+	longtitude: String!
+	openingHour: String!
+	closingHour: String!
+}
+
+type Category @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	name: String!
+	drinks: [Drink] @hasMany
+}
+
+type OrderItem @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	drink: Drink! @hasOne
+	milk: Milk @hasOne
+	size: Size! @hasOne
+	flavorShots: [FlavorShot] @hasMany
+	price: Float!
+	orderID: ID! @index(name: "byOrder")
+}
+
+type Order @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	items: [OrderItem!] @hasMany(indexName: "byOrder", fields: ["id"])
+	store: Store! @hasOne
+	total: Float!
+	status: String!
+}
+
+type Drink @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	name: String!
+	description: String!
+	price: Float!
+	sizes: [Size] @hasMany
+	flavorShots: [FlavorShot] @hasMany
+	milks: [Milk] @hasMany
+}
+
+type Size @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	value: String!
+	extraCost: Float!
+}
+
+type FlavorShot @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	name: String!
+	extraCost: Float!
+	basketitemID: ID! @index(name: "byBasketItem")
+}
+
+type Milk @model @auth(rules: [{ allow: public }]) {
+	id: ID!
+	name: String!
+}
